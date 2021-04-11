@@ -1,64 +1,77 @@
 var END=0;
 var PLAY=1;
 var gameState=PLAY;
+var ground,groundImage,chef;
+var cheese,olive,pepper,spinach,tomato;
+
 function preload(){
-groundImage=loadImage("ground2.png");
-pizzaslice=loadImage("pizzaslice.png");
-chef=loadImage("stickman.png");
-cheese=loadImage("cheese.png");
-olive=loadImage("olive.png");
-pepper=loadImage("pepper.png");
-spinach=loadImage("spinach.png");
-tomato=loadImage("tomato.png");
+    groundImage=loadImage("ground2.png");
+    pizzaslice=loadImage("pizzaslice.png");
+    chef=loadImage("stickman.png");
+    cheese=loadImage("cheese.png");
+    olive=loadImage("olive.png");
+    pepper=loadImage("pepper.png");
+    spinach=loadImage("spinach.png");
+    tomato=loadImage("tomato.png");
 }
 
 function setup() {
- createCanvas(1200,400);
-baker=createSprite(100,350,20,20);
-baker.addImage(chef);
-baker.scale=0.2;
-ground=createSprite(600,380,1200,30);
-ground.addImage(groundImage);
-toppingsGroup= new Group();
-slicesGroup= new Group();
-baker.debug=true;
-baker.setCollider("circle",0,20,100);
+    createCanvas(1200,400);
+    baker=createSprite(100,350,20,20);
+    baker.addImage(chef);
+    baker.scale=0.2;
+    ground=createSprite(600,380,1200,30);
+    ground.addImage(groundImage);
+    toppingsGroup= new Group();
+    slicesGroup= new Group();
+    baker.debug=true;
+    baker.setCollider("circle",0,20,100);
 }
 
 function draw() {
- background("pink");
-if(gameState===PLAY){
-    if(keyDown("space")){
-        baker.velocityY=-15;
+
+    background("pink");
+
+
+    if(gameState===PLAY){
+
+        ground.velocityX=-5;
+        if (ground.x < 0){
+            ground.x = ground.width/2;
+        }
+
+        if(keyDown("space")){
+            baker.velocityY=-15;
+        }
+        baker.velocityY=baker.velocityY+0.8;
+        
+
+        spawnToppings();
+        spawnSlices();
+
+        if(toppingsGroup.isTouching(baker)){
+        gameState=END;
+        }
+
     }
+    else if(gameState===END){
 
-    ground.velocityX=-5;
-    baker.velocityY=baker.velocityY+0.8;
-    if (ground.x < 0){
-        ground.x = ground.width/2;
-     }
+        baker.velocityY=0;
+        ground.velocityX=0;
 
-     spawnToppings();
-     spawnSlices();
-if(toppingsGroup.isTouching(baker)){
-    gameState=END;
- }
-}
-else if(gameState===END){
-    baker.velocityY=0;
-    toppingsGroup.setVelocityEach(0);
-    slicesGroup.setVelocityEach(0);
-    ground.velocityX=0;
-    toppingsGroup.setLifetimeEach(-231);
-    slicesGroup.setLifetimeEach(-1839);
-}
- baker.collide(ground);
-drawSprites();
+        toppingsGroup.setVelocityXEach(0);
+        slicesGroup.setVelocityXEach(0);
+       
+        toppingsGroup.setLifetimeEach(-1);
+        slicesGroup.setLifetimeEach(-1);
+    }
+    baker.collide(ground);
+    drawSprites();
 }
 function spawnToppings(){
     if (frameCount % 100 === 0){
-        var toppings = createSprite(displayWidth,360,10,40);
-        toppings.velocityX = -5;
+         var toppings = createSprite(displayWidth,360,10,40);
+             toppings.velocityX = -5;
         
          //generate random obstacles
          var rand = Math.round(random(1,5));
@@ -95,7 +108,7 @@ function spawnSlices(){
         slices.scale=0.2;
         slices.velocityX = -5; 
         slices.y=Math.round(random(150,300));
-slices.lifetime=400;
-slicesGroup.add(slices);
+        slices.lifetime=400;
+        slicesGroup.add(slices);
 }
 }
